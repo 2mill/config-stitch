@@ -1,50 +1,77 @@
 import java.io.File;
-import java.io.Writer;
+import java.io.IOException;
+import java.io.FileWriter;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Iterator;
 class Main {
 
 	public static void main(String[] args) {
 
 		Scanner sc = new Scanner(System.in);
-		System.out.print("Base file:");
+		System.out.print("Tempalte file:");
 		File template = new File("./"+sc.nextLine());
-		System.out.print("Target: ");
+		System.out.print("Config File: ");
 		File config = new File("./"+sc.nextLine());
 		if (!(config.exists() && template.exists())) {
 			System.err.println("Could not find either or both files");
 		}
-
-		Scanner templateRead= null;
-		Scanner configRead = null;
-		ArrayList<String> targetLines = new ArrayList<>();
-
+		Int temp = null;
 		try {
-			templateRead = new Scanner(template);
-			configRead = new Scanner(config);
-		} catch (Exception e) {
-			System.err.print("Could not read one or both files");
+			temp = new Int(template);
+		} catch (IOException e) {
+			System.err.println("Failed reading template configuration file:" + template);
 			return;
 		}
-		String output = new String();
 
-		while (configRead.hasNextLine()) {
-			String line = configRead.nextLine();
 
-			if (line.startsWith("interface")) {
-				System.out.println(line);
-				while (!line.equals("!")) {
-					line = configRead.nextLine();
-					System.out.println(line);
-				}
+		/**
+		 * TODO: ALL OF THIS SHIT NEEDS TO GO INTO newConfigIterator
+		 */
+
+		try {
+			String build = new String();
+			Scanner configScanner = new Scanner(config);
+			ArrayList<String> newConfig = new ArrayList<String>();
+			Iterator<String> iter = temp.getInterfaceList().iterator();
+			while (configScanner.hasNextLine()) {
+				String line = configScanner.nextLine();
+				if (line.startsWith("hostname")) newConfig.add(line);
+				else if (line.startsWith("interface")) newConfig.add(iter.next());
+				else newConfig.add(line);
 			}
+
+		} catch (IOException e) {
+			System.err.println("Could not read config file");
 		}
 
+		//Write to file
 
-		//Switch to check if we are reading from configRead or not.
+		//Generate new config
+		File newFile = new File("_new.config");
+		int inc = 0;
+		while (newFile.exists()) {
+			newFile = new File(inc + "_new.config");
+		}
+
+		FileWriter writer;
+		try {
+			newFile.createNewFile();
+			writer = new FileWriter(newFile);
+		} catch (IOException e) {
+			System.err.println("Could not create new config file");
+		}
+		System.out.println("New config file: " + newFile);
+
+		Iterator<String> configIterator = newConfigh
 
 
 	}
 
+	public static Iterator<String> newConfigIterator(File config, Int template) throws IOEXception {
 
+	}
 }
+
+
